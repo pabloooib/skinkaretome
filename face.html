@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKINCARE ATELIER</title>
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #8d7b6d;
+            --accent: #f4ece6;
+            --bg: #ffffff;
+            --text: #333333;
+            --text-muted: #757575;
+            --border: #eeeeee;
+            --radius: 4px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--accent);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* App Shell */
+        #app {
+            max-width: 450px;
+            margin: 0 auto;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+        }
+
+        header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1rem;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* UI Components */
+        .step-view {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-top: 1rem; }
+
+        /* Form Elements */
+        .option-card {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option-card.active { border-color: var(--primary); background: var(--accent); }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Cart Floating Indicator */
+        .cart-summary {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+        }
+
+        .cart-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .total-row { font-weight: 600; font-size: 1.1rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #ccc; }
+
+        .product-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge { font-size: 0.7rem; background: var(--secondary); color: white; padding: 2px 6px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <header>
+            <div class="brand">Lumina Atelier</div>
+        </header>
+
+        <main id="stage">
+            </main>
+
+        <div id="cart-footer" class="cart-summary" style="display: none;">
+            </div>
+    </div>
+
+    <script>
+        /**
+         * DATA LAYER
+         */
+        const PRODUCTS = [
+            { id: 1, name: "Cleanser Sedoso", price: 28, skin: "seca" },
+            { id: 2, name: "Sérum Control Sebo", price: 42, skin: "grasa" },
+            { id: 3, name: "Crema Hidratante H2O", price: 35, skin: "mixta" },
+            { id: 4, name: "Protector Solar Invisible", price: 30, skin: "todas" },
+            { id: 5, name: "Tónico Exfoliante", price: 25, skin: "grasa" }
+        ];
+
+        /**
+         * STATE MANAGEMENT
+         */
+        let state = {
+            step: 'intro',
+            skinType: null,
+            cart: [],
+            address: '',
+            paymentMethod: '',
+            feedback: { rating: 0, comment: '' }
+        };
+
+        const setState = (update) => {
+            state = { ...state, ...update };
+            render();
+        };
+
+        /**
+         * RENDERING ENGINE
+         */
+        const stage = document.getElementById('stage');
+        const footer = document.getElementById('cart-footer');
+
+        const render = () => {
+            updateFooter();
+            
+            switch(state.step) {
+                case 'intro': renderIntro(); break;
+                case 'diagnostic': renderDiagnostic(); break;
+                case 'catalog': renderCatalog(); break;
+                case 'checkout': renderCheckout(); break;
+                case 'confirmation': renderConfirmation(); break;
+                case 'feedback': renderFeedback(); break;
+            }
+        };
+
+        const updateFooter = () => {
+            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+            if (state.cart.length > 0 && ['catalog', 'checkout'].includes(state.step)) {
+                footer.style.display = 'block';
+                footer.innerHTML = `
+                    <div class="cart-row">
+                        <span>Items: ${state.cart.length}</span>
+                        <span>Total Parcial: $${total}</span>
+                    </div>
+                `;
+            } else {
+                footer.style.display = 'none';
+            }
+        };
+
+        /**
+         * VIEWS
+         */
+
+        const renderIntro = () => {
+            stage.innerHTML = `
+                <div class="step-view">
+                    <h2>Bienvenida a su Ritual</h2>
+                    <p>Diseñamos una experiencia personalizada basada en las necesidades reales de su piel.</p>
+                    <button class="btn" onclick="setState({step: 'diagnostic'})">Empezar Diagnóstico</button>
+                </div>
+            `;
+        };
+
+        const renderDiagnostic = () => {
+            stage.innerHTML = `
+                <div class="step-view">
+                    <h2>¿Cómo siente su piel?</h2>
+                    <div class="option-card" onclick="setState({skinType: 'seca', step: 'catalog'})">Tirante, opaca o con descamación</div>
+                    <div class="option-card" onclick="setState({skinType: 'grasa', step: 'catalog'})">Brillo constante y poros visibles</div>
+                    <div class="option-card" onclick="setState({skinType: 'mixta', step: 'catalog'})">Brillo en zona T, mejillas secas</div>
+                    <p style="font-size: 0.7rem; margin-top: 2rem;">*Nota: Este diagnóstico es orientativo.</p>
+                </div>
+            `;
+        };
+
+        const renderCatalog = () => {
+            const recommended = PRODUCTS.filter(p => p.skin === state.skinType || p.skin === 'todas');
+            
+            let html = `<div class="step-view">
+                <h2>Recomendación para usted</h2>
+                <div class="catalog-grid">`;
+
+            recommended.forEach(p => {
+                const inCart = state.cart.find(i => i.id === p.id);
+                html += `
+                    <div class="product-item">
+                        <div>
+                            <strong>${p.name}</strong><br>
+                            <span style="color: var(--secondary)">$${p.price}</span>
+                        </div>
+                        <button class="btn" style="width: auto; padding: 0.5rem 1rem;" 
+                            onclick="toggleCart(${p.id})">
+                            ${inCart ? 'Quitar' : 'Añadir'}
+                        </button>
+                    </div>
+                `;
+            });
+
+            html += `</div>
+                <button class="btn" style="margin-top: 2rem" 
+                    ${state.cart.length === 0 ? 'disabled' : ''} 
+                    onclick="setState({step: 'checkout'})">
+                    Finalizar Pedido
+                </button>
+            </div>`;
+            stage.innerHTML = html;
+        };
+
+        const renderCheckout = () => {
+            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+            stage.innerHTML = `
+                <div class="step-view">
+                    <h2>Detalles de Entrega</h2>
+                    <label>Dirección de Envío</label>
+                    <input type="text" id="addr" placeholder="Ej. Calle Falsa 123, Zona 10" oninput="state.address = this.value">
+                    
+                    <label>Método de Pago</label>
+                    <select id="payment" onchange="state.paymentMethod = this.value">
+                        <option value="">Seleccione...</option>
+                        <option value="Transferencia">Transferencia Bancaria</option>
+                        <option value="Efectivo">Efectivo contra entrega</option>
+                        <option value="Link">Link de Pago (+3%)</option>
+                    </select>
+
+                    <div class="total-row">Total Productos: $${total}</div>
+                    <p style="font-size: 0.8rem; background: #fff8e1; padding: 0.8rem; border-radius: 4px; margin-top: 1rem;">
+                        ℹ️ El costo de envío depende de su zona y será confirmado por un asesor vía Instagram.
+                    </p>
+
+                    <button class="btn" onclick="processOrder()">Generar Pedido para Instagram</button>
+                    <button class="btn btn-outline" onclick="setState({step: 'catalog'})">Volver</button>
+                </div>
+            `;
+        };
+
+        const renderConfirmation = () => {
+            stage.innerHTML = `
+                <div class="step-view" style="text-align: center;">
+                    <h2 style="color: #2e7d32;">¡Pedido Preparado!</h2>
+                    <p>El resumen ha sido copiado a su portapapeles. Por favor, péguelo en nuestro chat de Instagram para confirmar.</p>
+                    <button class="btn btn-outline" onclick="setState({step: 'feedback'})">Dejar una sugerencia</button>
+                </div>
+            `;
+        };
+
+        const renderFeedback = () => {
+            stage.innerHTML = `
+                <div class="step-view">
+                    <h2>Valoramos su opinión</h2>
+                    <p>¿Cómo fue su experiencia navegando hoy?</p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+                        ${[1,2,3,4,5].map(n => `<button class="btn btn-outline" style="margin:0" onclick="alert('¡Gracias!')">${n}</button>`).join('')}
+                    </div>
+                    <textarea placeholder="¿Qué podemos mejorar?" rows="4"></textarea>
+                    <button class="btn" onclick="location.reload()">Enviar y Cerrar</button>
+                </div>
+            `;
+        };
+
+        /**
+         * LOGIC & ACTIONS
+         */
+
+        window.toggleCart = (id) => {
+            const p = PRODUCTS.find(prod => prod.id === id);
+            const index = state.cart.findIndex(item => item.id === id);
+            let newCart = [...state.cart];
+            
+            if (index > -1) newCart.splice(index, 1);
+            else newCart.push(p);
+            
+            setState({ cart: newCart });
+        };
+
+        window.processOrder = () => {
+            if (!state.address || !state.paymentMethod) {
+                alert("Por favor complete la dirección y método de pago.");
+                return;
+            }
+
+            const productsList = state.cart.map(i => `- ${i.name} ($${i.price})`).join('\n');
+            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+            
+            const summary = `✨ NUEVO PEDIDO LUMINA ✨\n\n` +
+                `🛍️ Productos:\n${productsList}\n\n` +
+                `💰 Total Parcial: $${total}\n` +
+                `📍 Dirección: ${state.address}\n` +
+                `💳 Pago: ${state.paymentMethod}\n\n` +
+                `⚠️ Quedo a la espera de la confirmación del costo de envío para mi zona.`;
+
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(summary).then(() => {
+                setState({ step: 'confirmation' });
+                // En un producto real, aquí abriríamos el link de IG
+                // window.location.href = "https://ig.me/m/USUARIO";
+            });
+        };
+
+        // Initialize App
+        render();
+
+    </script>
+</body>
+</html>
