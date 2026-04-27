@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKINCARE ATELIER</title>
+    <title>LUMINA — Sistema de Gestión Skincare</title>
     <style>
         :root {
             --primary: #1a1a1a;
             --secondary: #8d7b6d;
             --accent: #f4ece6;
+            --success: #4a7c59;
             --bg: #ffffff;
             --text: #333333;
             --text-muted: #757575;
@@ -21,7 +22,7 @@
 
         body {
             font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--accent);
+            background-color: #f9f9f9;
             color: var(--text);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
@@ -39,101 +40,97 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.05);
         }
 
+        #app.admin-mode { max-width: 900px; background: #fdfdfd; }
+
         header {
-            padding: 1.5rem;
+            padding: 1.2rem;
             text-align: center;
             border-bottom: 1px solid var(--border);
+            background: white;
             position: sticky;
             top: 0;
-            background: white;
-            z-index: 10;
+            z-index: 100;
         }
 
         .brand {
-            font-size: 1rem;
-            letter-spacing: 0.3rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.4rem;
             text-transform: uppercase;
             font-weight: 300;
         }
 
-        main {
-            flex: 1;
-            padding: 2rem 1.5rem;
-            overflow-y: auto;
+        .mode-switcher {
+            font-size: 0.6rem;
+            margin-top: 5px;
+            color: var(--secondary);
+            cursor: pointer;
+            text-decoration: underline;
         }
 
-        /* UI Components */
-        .step-view {
-            animation: slideIn 0.5s ease;
-        }
+        main { flex: 1; padding: 1.5rem; position: relative; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Componentes de UI */
+        .view-fade { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
-        p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.25rem; font-weight: 400; margin-bottom: 1rem; color: var(--primary); }
+        .price-tag { color: var(--secondary); font-weight: 500; }
 
         .btn {
-            display: block;
-            width: 100%;
-            padding: 1.1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1rem;
-            cursor: pointer;
-            transition: var(--transition);
+            display: block; width: 100%; padding: 1rem;
+            background: var(--primary); color: white; border: none;
+            text-transform: uppercase; letter-spacing: 0.1rem; font-size: 0.75rem;
+            cursor: pointer; transition: var(--transition); border-radius: var(--radius);
         }
+        .btn:hover { opacity: 0.9; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--primary); }
 
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-top: 1rem; }
-
-        /* Form Elements */
-        .option-card {
-            padding: 1rem;
+        /* Catálogo Visual */
+        .product-card {
             border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
             border-radius: var(--radius);
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            transition: var(--transition);
+            overflow: hidden;
+        }
+        .product-img {
+            width: 100%; height: 200px;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+        }
+        .product-info { padding: 1rem; }
+        .product-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0; }
+        .product-benefit { font-size: 0.75rem; color: var(--secondary); margin-bottom: 1rem; }
+
+        /* Floating Cart */
+        .cart-bar {
+            position: sticky; bottom: 0; background: var(--primary);
+            color: white; padding: 1rem 1.5rem; display: flex;
+            justify-content: space-between; align-items: center;
+            font-size: 0.9rem; z-index: 90;
         }
 
-        .option-card.active { border-color: var(--primary); background: var(--accent); }
+        /* Admin Dashboard */
+        .order-card {
+            background: white; border: 1px solid var(--border);
+            padding: 1rem; margin-bottom: 1rem; border-radius: 8px;
+        }
+        .status-badge {
+            font-size: 0.65rem; padding: 2px 8px;
+            background: var(--accent); border-radius: 10px;
+        }
 
+        /* Forms */
         input, select, textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            outline: none;
+            width: 100%; padding: 0.8rem; margin-bottom: 1rem;
+            border: 1px solid var(--border); border-radius: var(--radius);
+            font-family: inherit;
         }
 
-        /* Cart Floating Indicator */
-        .cart-summary {
-            padding: 1rem;
-            border-top: 1px solid var(--border);
-            background: #fafafa;
-        }
+        .rating-stars { display: flex; gap: 10px; margin: 1rem 0; justify-content: center; }
+        .star { cursor: pointer; font-size: 1.5rem; color: #ddd; }
+        .star.active { color: #d4af37; }
 
-        .cart-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .total-row { font-weight: 600; font-size: 1.1rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #ccc; }
-
-        .product-item {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge { font-size: 0.7rem; background: var(--secondary); color: white; padding: 2px 6px; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -141,229 +138,318 @@
     <div id="app">
         <header>
             <div class="brand">Lumina Atelier</div>
+            <div class="mode-switcher" onclick="toggleMode()">Cambiar a Vista Vendedor</div>
         </header>
 
         <main id="stage">
             </main>
 
-        <div id="cart-footer" class="cart-summary" style="display: none;">
-            </div>
+        <div id="global-cart-bar" class="cart-bar" style="display:none" onclick="app.setState({step: 'cart'})">
+            <span>Ver mi carrito</span>
+            <span id="cart-total-display">Q 0.00</span>
+        </div>
     </div>
 
     <script>
         /**
-         * DATA LAYER
+         * ARQUITECTURA DE DATOS
          */
-        const PRODUCTS = [
-            { id: 1, name: "Cleanser Sedoso", price: 28, skin: "seca" },
-            { id: 2, name: "Sérum Control Sebo", price: 42, skin: "grasa" },
-            { id: 3, name: "Crema Hidratante H2O", price: 35, skin: "mixta" },
-            { id: 4, name: "Protector Solar Invisible", price: 30, skin: "todas" },
-            { id: 5, name: "Tónico Exfoliante", price: 25, skin: "grasa" }
+        const CATALOG = [
+            { id: 1, name: "Sérum Resplandor", price: 250, icon: "✨", info: "Vitamina C + Ácido Hialurónico", benefit: "Aporta luminosidad y reduce manchas.", skin: "seca" },
+            { id: 2, name: "Gel Equilibrante", price: 185, icon: "🍃", info: "Niacinamida 5% + Zinc", benefit: "Controla el brillo y minimiza poros.", skin: "grasa" },
+            { id: 3, name: "Bálsamo Nube", price: 210, icon: "☁️", info: "Ceramidas + Escualano", benefit: "Repara la barrera cutánea.", skin: "mixta" }
         ];
 
         /**
-         * STATE MANAGEMENT
+         * COMUNICACIÓN EN TIEMPO REAL (Sync Engine)
          */
-        let state = {
-            step: 'intro',
-            skinType: null,
-            cart: [],
-            address: '',
-            paymentMethod: '',
-            feedback: { rating: 0, comment: '' }
-        };
-
-        const setState = (update) => {
-            state = { ...state, ...update };
-            render();
-        };
+        const channel = new BroadcastChannel('skincare_sync');
 
         /**
-         * RENDERING ENGINE
+         * ESTADO GLOBAL
          */
-        const stage = document.getElementById('stage');
-        const footer = document.getElementById('cart-footer');
+        const app = {
+            state: {
+                isAdmin: false,
+                step: 'intro', // intro, diagnostic, catalog, cart, checkout, success, feedback
+                skinType: null,
+                cart: [],
+                customer: { address: '', payment: 'Transferencia' },
+                orders: JSON.parse(localStorage.getItem('lumina_orders') || '[]'),
+                feedback: null
+            },
 
-        const render = () => {
-            updateFooter();
-            
-            switch(state.step) {
-                case 'intro': renderIntro(); break;
-                case 'diagnostic': renderDiagnostic(); break;
-                case 'catalog': renderCatalog(); break;
-                case 'checkout': renderCheckout(); break;
-                case 'confirmation': renderConfirmation(); break;
-                case 'feedback': renderFeedback(); break;
+            setState(update) {
+                this.state = { ...this.state, ...update };
+                this.sync();
+                this.render();
+            },
+
+            sync() {
+                // Persistir órdenes localmente
+                localStorage.setItem('lumina_orders', JSON.stringify(this.state.orders));
+                // Notificar a otras pestañas
+                channel.postMessage({ type: 'UPDATE_STATE', data: this.state });
+            },
+
+            render() {
+                const stage = document.getElementById('stage');
+                const cartBar = document.getElementById('global-cart-bar');
+                const appContainer = document.getElementById('app');
+
+                // Toggle Admin Mode Class
+                appContainer.classList.toggle('admin-mode', this.state.isAdmin);
+                document.querySelector('.mode-switcher').innerText = this.state.isAdmin ? "Volver a Vista Cliente" : "Ir a Vista Vendedor";
+
+                if (this.state.isAdmin) {
+                    cartBar.style.display = 'none';
+                    return renderAdmin(stage);
+                }
+
+                // Renderizado por pasos (Cliente)
+                switch(this.state.step) {
+                    case 'intro': renderIntro(stage); break;
+                    case 'diagnostic': renderDiagnostic(stage); break;
+                    case 'catalog': renderCatalog(stage); break;
+                    case 'cart': renderCart(stage); break;
+                    case 'checkout': renderCheckout(stage); break;
+                    case 'success': renderSuccess(stage); break;
+                    case 'feedback': renderFeedback(stage); break;
+                }
+
+                // Control barra de carrito
+                const total = this.state.cart.reduce((s, item) => s + item.price, 0);
+                if (this.state.cart.length > 0 && ['catalog', 'diagnostic'].includes(this.state.step)) {
+                    cartBar.style.display = 'flex';
+                    document.getElementById('cart-total-display').innerText = `Q ${total.toFixed(2)}`;
+                } else {
+                    cartBar.style.display = 'none';
+                }
             }
         };
 
-        const updateFooter = () => {
-            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
-            if (state.cart.length > 0 && ['catalog', 'checkout'].includes(state.step)) {
-                footer.style.display = 'block';
-                footer.innerHTML = `
-                    <div class="cart-row">
-                        <span>Items: ${state.cart.length}</span>
-                        <span>Total Parcial: $${total}</span>
-                    </div>
-                `;
-            } else {
-                footer.style.display = 'none';
+        // Escuchar cambios de otras pestañas
+        channel.onmessage = (event) => {
+            if (event.data.type === 'UPDATE_STATE') {
+                app.state.orders = event.data.data.orders;
+                app.render();
             }
         };
 
         /**
-         * VIEWS
+         * VISTAS: CLIENTE
          */
 
-        const renderIntro = () => {
-            stage.innerHTML = `
-                <div class="step-view">
-                    <h2>Bienvenida a su Ritual</h2>
-                    <p>Diseñamos una experiencia personalizada basada en las necesidades reales de su piel.</p>
-                    <button class="btn" onclick="setState({step: 'diagnostic'})">Empezar Diagnóstico</button>
+        function renderIntro(el) {
+            el.innerHTML = `
+                <div class="view-fade" style="text-align:center; padding-top:2rem">
+                    <h2 style="letter-spacing:0.2rem; text-transform:uppercase">Tu piel, tu arte</h2>
+                    <p style="margin-bottom:2rem">Descubre una rutina diseñada por expertos para la arquitectura de tu rostro.</p>
+                    <button class="btn" onclick="app.setState({step: 'diagnostic'})">Comenzar Diagnóstico</button>
                 </div>
             `;
-        };
+        }
 
-        const renderDiagnostic = () => {
-            stage.innerHTML = `
-                <div class="step-view">
-                    <h2>¿Cómo siente su piel?</h2>
-                    <div class="option-card" onclick="setState({skinType: 'seca', step: 'catalog'})">Tirante, opaca o con descamación</div>
-                    <div class="option-card" onclick="setState({skinType: 'grasa', step: 'catalog'})">Brillo constante y poros visibles</div>
-                    <div class="option-card" onclick="setState({skinType: 'mixta', step: 'catalog'})">Brillo en zona T, mejillas secas</div>
-                    <p style="font-size: 0.7rem; margin-top: 2rem;">*Nota: Este diagnóstico es orientativo.</p>
+        function renderDiagnostic(el) {
+            el.innerHTML = `
+                <div class="view-fade">
+                    <h2>Diagnóstico Express</h2>
+                    <p>¿Cómo sientes tu piel al mediodía?</p>
+                    <button class="btn btn-outline" style="margin-bottom:0.5rem" onclick="app.setState({skinType:'seca', step:'catalog'})">Tirante o con zonas opacas</button>
+                    <button class="btn btn-outline" style="margin-bottom:0.5rem" onclick="app.setState({skinType:'grasa', step:'catalog'})">Brillante en todo el rostro</button>
+                    <button class="btn btn-outline" onclick="app.setState({skinType:'mixta', step:'catalog'})">Brillo en frente y nariz, mejillas secas</button>
                 </div>
             `;
-        };
+        }
 
-        const renderCatalog = () => {
-            const recommended = PRODUCTS.filter(p => p.skin === state.skinType || p.skin === 'todas');
+        function renderCatalog(el) {
+            let html = `<div class="view-fade"><h2>Recomendación</h2>`;
+            const items = app.state.skinType ? CATALOG.filter(i => i.skin === app.state.skinType || i.skin === 'todas') : CATALOG;
             
-            let html = `<div class="step-view">
-                <h2>Recomendación para usted</h2>
-                <div class="catalog-grid">`;
-
-            recommended.forEach(p => {
-                const inCart = state.cart.find(i => i.id === p.id);
+            items.forEach(p => {
+                const inCart = app.state.cart.find(c => c.id === p.id);
                 html += `
-                    <div class="product-item">
-                        <div>
-                            <strong>${p.name}</strong><br>
-                            <span style="color: var(--secondary)">$${p.price}</span>
+                    <div class="product-card">
+                        <div class="product-img">${p.icon}</div>
+                        <div class="product-info">
+                            <div style="display:flex; justify-content:space-between">
+                                <strong>${p.name}</strong>
+                                <span class="price-tag">Q ${p.price}</span>
+                            </div>
+                            <p class="product-desc">${p.info}</p>
+                            <p class="product-benefit"><strong>Beneficio:</strong> ${p.benefit}</p>
+                            <button class="btn ${inCart ? 'btn-outline' : ''}" onclick="toggleCart(${p.id})">
+                                ${inCart ? 'Quitar del carrito' : 'Añadir al carrito'}
+                            </button>
                         </div>
-                        <button class="btn" style="width: auto; padding: 0.5rem 1rem;" 
-                            onclick="toggleCart(${p.id})">
-                            ${inCart ? 'Quitar' : 'Añadir'}
-                        </button>
                     </div>
                 `;
             });
+            html += `</div>`;
+            el.innerHTML = html;
+        }
 
-            html += `</div>
-                <button class="btn" style="margin-top: 2rem" 
-                    ${state.cart.length === 0 ? 'disabled' : ''} 
-                    onclick="setState({step: 'checkout'})">
-                    Finalizar Pedido
-                </button>
+        function renderCart(el) {
+            const total = app.state.cart.reduce((s, i) => s + i.price, 0);
+            let html = `<div class="view-fade"><h2>Tu Carrito</h2>`;
+            app.state.cart.forEach(item => {
+                html += `<div style="display:flex; justify-content:space-between; padding:1rem 0; border-bottom:1px solid #eee">
+                    <span>${item.name}</span><strong>Q ${item.price}</strong>
+                </div>`;
+            });
+            html += `
+                <div style="padding:1.5rem 0; text-align:right"><h3>Total: Q ${total.toFixed(2)}</h3></div>
+                <button class="btn" onclick="app.setState({step:'checkout'})">Continuar al Pago</button>
+                <button class="btn btn-outline" style="margin-top:1rem" onclick="app.setState({step:'catalog'})">Seguir comprando</button>
             </div>`;
-            stage.innerHTML = html;
-        };
+            el.innerHTML = html;
+        }
 
-        const renderCheckout = () => {
-            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
-            stage.innerHTML = `
-                <div class="step-view">
-                    <h2>Detalles de Entrega</h2>
-                    <label>Dirección de Envío</label>
-                    <input type="text" id="addr" placeholder="Ej. Calle Falsa 123, Zona 10" oninput="state.address = this.value">
-                    
+        function renderCheckout(el) {
+            el.innerHTML = `
+                <div class="view-fade">
+                    <h2>Finalizar Pedido</h2>
+                    <label>Dirección completa</label>
+                    <input type="text" id="addr" placeholder="Ej: 10 calle 5-50 zona 10, Edificio..." onchange="app.state.customer.address = this.value">
                     <label>Método de Pago</label>
-                    <select id="payment" onchange="state.paymentMethod = this.value">
-                        <option value="">Seleccione...</option>
-                        <option value="Transferencia">Transferencia Bancaria</option>
-                        <option value="Efectivo">Efectivo contra entrega</option>
-                        <option value="Link">Link de Pago (+3%)</option>
+                    <select onchange="app.state.customer.payment = this.value">
+                        <option>Transferencia</option>
+                        <option>Efectivo contra entrega</option>
+                        <option>Tarjeta (Próximamente)</option>
                     </select>
-
-                    <div class="total-row">Total Productos: $${total}</div>
-                    <p style="font-size: 0.8rem; background: #fff8e1; padding: 0.8rem; border-radius: 4px; margin-top: 1rem;">
-                        ℹ️ El costo de envío depende de su zona y será confirmado por un asesor vía Instagram.
-                    </p>
-
-                    <button class="btn" onclick="processOrder()">Generar Pedido para Instagram</button>
-                    <button class="btn btn-outline" onclick="setState({step: 'catalog'})">Volver</button>
-                </div>
-            `;
-        };
-
-        const renderConfirmation = () => {
-            stage.innerHTML = `
-                <div class="step-view" style="text-align: center;">
-                    <h2 style="color: #2e7d32;">¡Pedido Preparado!</h2>
-                    <p>El resumen ha sido copiado a su portapapeles. Por favor, péguelo en nuestro chat de Instagram para confirmar.</p>
-                    <button class="btn btn-outline" onclick="setState({step: 'feedback'})">Dejar una sugerencia</button>
-                </div>
-            `;
-        };
-
-        const renderFeedback = () => {
-            stage.innerHTML = `
-                <div class="step-view">
-                    <h2>Valoramos su opinión</h2>
-                    <p>¿Cómo fue su experiencia navegando hoy?</p>
-                    <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
-                        ${[1,2,3,4,5].map(n => `<button class="btn btn-outline" style="margin:0" onclick="alert('¡Gracias!')">${n}</button>`).join('')}
+                    <div style="background:var(--accent); padding:1rem; border-radius:var(--radius); font-size:0.8rem; margin-bottom:1.5rem">
+                        ℹ️ El costo de envío depende de la zona y será definido por el asesor que te atiende.
                     </div>
-                    <textarea placeholder="¿Qué podemos mejorar?" rows="4"></textarea>
-                    <button class="btn" onclick="location.reload()">Enviar y Cerrar</button>
+                    <button class="btn" onclick="enviarPedido()">Confirmar y Enviar</button>
                 </div>
             `;
-        };
+        }
+
+        function renderSuccess(el) {
+            el.innerHTML = `
+                <div class="view-fade" style="text-align:center; padding-top:3rem">
+                    <div style="font-size:4rem">✅</div>
+                    <h2>¡Pedido Enviado!</h2>
+                    <p>Un asesor recibirá tu pedido en segundos para coordinar el envío.</p>
+                    <button class="btn btn-outline" style="margin-top:2rem" onclick="app.setState({step:'feedback'})">Calificar Experiencia</button>
+                </div>
+            `;
+        }
+
+        function renderFeedback(el) {
+            el.innerHTML = `
+                <div class="view-fade" style="text-align:center">
+                    <h2>¿Cómo fue tu experiencia?</h2>
+                    <div class="rating-stars">
+                        ${[1,2,3,4,5].map(n => `<span class="star" onclick="setRating(${n})">★</span>`).join('')}
+                    </div>
+                    <textarea id="feedback-txt" placeholder="¿Qué podríamos mejorar?" style="height:100px"></textarea>
+                    <button class="btn" onclick="enviarFeedback()">Enviar Comentarios</button>
+                </div>
+            `;
+        }
 
         /**
-         * LOGIC & ACTIONS
+         * VISTAS: VENDEDOR (DASHBOARD)
          */
+
+        function renderAdmin(el) {
+            let html = `<div class="view-fade">
+                <h2 style="display:flex; justify-content:space-between">
+                    Panel de Pedidos 
+                    <span class="status-badge" style="background:var(--success); color:white">En Línea</span>
+                </h2>`;
+            
+            if (app.state.orders.length === 0) {
+                html += `<p style="padding:4rem; text-align:center; border:2px dashed #eee">Esperando nuevos pedidos...</p>`;
+            } else {
+                app.state.orders.slice().reverse().forEach(order => {
+                    html += `
+                        <div class="order-card">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:1rem">
+                                <strong>Pedido #${order.id}</strong>
+                                <span class="status-badge">${order.status}</span>
+                            </div>
+                            <div style="font-size:0.9rem; margin-bottom:1rem">
+                                <div>📍 <strong>Dirección:</strong> ${order.address}</div>
+                                <div>💳 <strong>Pago:</strong> ${order.payment}</div>
+                            </div>
+                            <div style="border-top:1px solid #f5f5f5; padding-top:0.5rem">
+                                ${order.items.map(i => `<div style="display:flex; justify-content:space-between; font-size:0.8rem"><span>${i.name}</span><span>Q${i.price}</span></div>`).join('')}
+                            </div>
+                            <div style="text-align:right; margin-top:0.5rem; font-weight:600">Subtotal: Q ${order.total}</div>
+                            ${order.feedback ? `<div style="margin-top:1rem; padding:0.5rem; background:#fff9e6; border-radius:4px; font-size:0.8rem">
+                                ⭐️ ${order.feedback.stars} Estrellas: "${order.feedback.comment}"
+                            </div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>`;
+            el.innerHTML = html;
+        }
+
+        /**
+         * LÓGICA DE NEGOCIO
+         */
+
+        window.toggleMode = () => app.setState({ isAdmin: !app.state.isAdmin });
 
         window.toggleCart = (id) => {
-            const p = PRODUCTS.find(prod => prod.id === id);
-            const index = state.cart.findIndex(item => item.id === id);
-            let newCart = [...state.cart];
+            const product = CATALOG.find(p => p.id === id);
+            const inCart = app.state.cart.find(c => c.id === id);
+            let newCart = [...app.state.cart];
             
-            if (index > -1) newCart.splice(index, 1);
-            else newCart.push(p);
+            if (inCart) newCart = newCart.filter(c => c.id !== id);
+            else newCart.push(product);
             
-            setState({ cart: newCart });
+            app.setState({ cart: newCart });
         };
 
-        window.processOrder = () => {
-            if (!state.address || !state.paymentMethod) {
-                alert("Por favor complete la dirección y método de pago.");
-                return;
-            }
-
-            const productsList = state.cart.map(i => `- ${i.name} ($${i.price})`).join('\n');
-            const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+        window.enviarPedido = () => {
+            if (!app.state.customer.address) return alert("Por favor ingresa tu dirección");
             
-            const summary = `✨ NUEVO PEDIDO LUMINA ✨\n\n` +
-                `🛍️ Productos:\n${productsList}\n\n` +
-                `💰 Total Parcial: $${total}\n` +
-                `📍 Dirección: ${state.address}\n` +
-                `💳 Pago: ${state.paymentMethod}\n\n` +
-                `⚠️ Quedo a la espera de la confirmación del costo de envío para mi zona.`;
+            const newOrder = {
+                id: Date.now().toString().slice(-4),
+                items: app.state.cart,
+                total: app.state.cart.reduce((s, i) => s + i.price, 0),
+                address: app.state.customer.address,
+                payment: app.state.customer.payment,
+                status: 'Pendiente',
+                feedback: null
+            };
 
-            // Copiar al portapapeles
-            navigator.clipboard.writeText(summary).then(() => {
-                setState({ step: 'confirmation' });
-                // En un producto real, aquí abriríamos el link de IG
-                // window.location.href = "https://ig.me/m/USUARIO";
+            const updatedOrders = [...app.state.orders, newOrder];
+            app.setState({ 
+                orders: updatedOrders, 
+                step: 'success',
+                cart: [] // Limpiar carrito tras enviar
             });
         };
 
-        // Initialize App
-        render();
+        window.setRating = (n) => {
+            document.querySelectorAll('.star').forEach((s, idx) => {
+                s.classList.toggle('active', idx < n);
+            });
+            app.state.tempRating = n;
+        };
+
+        window.enviarFeedback = () => {
+            const comment = document.getElementById('feedback-txt').value;
+            const stars = app.state.tempRating || 5;
+            
+            // Adjuntar al último pedido realizado
+            const updatedOrders = [...app.state.orders];
+            if (updatedOrders.length > 0) {
+                updatedOrders[updatedOrders.length - 1].feedback = { stars, comment };
+            }
+
+            app.setState({ orders: updatedOrders, step: 'intro', feedback: {stars, comment} });
+            alert("¡Gracias por tus comentarios!");
+        };
+
+        // Inicialización
+        app.render();
 
     </script>
 </body>
