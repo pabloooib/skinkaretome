@@ -7,107 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a1a1a;
-            --secondary: #8d7b6d;
-            --accent: #fdfaf8;
-            --white: #ffffff;
-            --border: #eeeeee;
-            --text: #2d2d2d;
-            --text-muted: #757575;
-            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            --primary: #1a1a1a; --secondary: #8d7b6d; --accent: #fdfaf8;
+            --white: #ffffff; --border: #eeeeee; --text: #2d2d2d;
+            --text-muted: #757575; --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--accent);
-            color: var(--text);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- LOGIN AESTHETIC --- */
-        #login-screen {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at center, #fff 0%, #f4ece6 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 1000; transition: var(--transition);
-        }
-
-        .login-orb {
-            width: 120px; height: 120px; background: var(--white);
-            border-radius: 50% 50% 0 50%; transform: rotate(-45deg);
-            box-shadow: 0 20px 40px rgba(141, 123, 109, 0.15);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: var(--transition); border: 1px solid rgba(255,255,255,0.8);
-        }
-
-        .login-orb:hover { transform: rotate(-45deg) scale(1.05); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--accent); color: var(--text); line-height: 1.7; }
+        
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #fff 0%, #f4ece6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: var(--transition); }
+        .login-orb { width: 120px; height: 120px; background: var(--white); border-radius: 50% 50% 0 50%; transform: rotate(-45deg); box-shadow: 0 20px 40px rgba(141, 123, 109, 0.15); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); }
         .login-orb::after { content: "ENTRAR"; transform: rotate(45deg); font-size: 0.6rem; letter-spacing: 0.3rem; color: var(--secondary); }
-
         .login-brand { margin-top: 2.5rem; font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; letter-spacing: 0.5rem; text-transform: uppercase; font-weight: 300; }
 
-        /* --- APP SHELL --- */
-        #app {
-            max-width: 480px; margin: 0 auto; background: var(--white);
-            min-height: 100vh; display: none; flex-direction: column;
-            box-shadow: 0 0 80px rgba(0,0,0,0.02); opacity: 0; transition: opacity 1s ease;
-        }
-
-        header {
-            padding: 2rem 1.5rem; text-align: center; position: sticky; top: 0;
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); z-index: 100;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
-
+        #app { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100vh; display: none; flex-direction: column; opacity: 0; transition: opacity 1s ease; }
+        header { padding: 2rem 1.5rem; text-align: center; position: sticky; top: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); z-index: 100; border-bottom: 1px solid rgba(0,0,0,0.03); }
         .brand-text { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; letter-spacing: 0.4rem; text-transform: uppercase; }
-
         main { flex: 1; padding: 2rem 1.8rem; }
+        
+        .product-card { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); animation: fadeInUp 0.8s ease forwards; }
+        .product-info-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+        .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; }
+        .product-price { color: var(--secondary); font-size: 0.9rem; }
+        .product-detail { font-size: 0.8rem; font-weight: 200; color: var(--text-muted); margin-bottom: 1.2rem; }
 
-        h2 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.8rem; margin-bottom: 1rem; }
-        p { font-weight: 200; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem; }
-
-        /* --- BOTONES --- */
-        .btn {
-            display: block; width: 100%; padding: 1.3rem; background: var(--primary); color: white; border: none;
-            text-transform: uppercase; letter-spacing: 0.2rem; font-size: 0.7rem; cursor: pointer; transition: var(--transition); border-radius: 2px;
-        }
-        .btn:hover { background: #000; letter-spacing: 0.22rem; }
-
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--primary); margin-bottom: 1rem; }
-
-        .btn-back {
-            display: inline-flex; align-items: center; background: none; border: none;
-            color: var(--secondary); font-size: 0.6rem; letter-spacing: 0.15rem; text-transform: uppercase;
-            cursor: pointer; margin-bottom: 1.5rem; transition: var(--transition);
-        }
-
-        /* --- FORMS --- */
-        input, select, textarea {
-            width: 100%; padding: 1rem; border: 1px solid var(--border); margin-bottom: 1.2rem;
-            font-family: 'Inter', sans-serif; font-weight: 300; font-size: 0.9rem; outline: none; border-radius: 2px;
-        }
-
-        /* --- CARDS --- */
-        .card-option {
-            padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1rem;
-            cursor: pointer; transition: var(--transition); border-radius: 2px;
-        }
-        .card-option:hover { background: var(--accent); border-color: var(--secondary); }
-
-        .product-card { margin-bottom: 3rem; animation: fadeInUp 0.8s ease forwards; }
-        .product-img { width: 100%; height: 260px; background: #fcfcfc; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin-bottom: 1.5rem; }
-
-        .tag-recom { font-size: 0.6rem; letter-spacing: 0.1rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-
+        .btn { display: block; width: 100%; padding: 1.1rem; background: var(--primary); color: white; border: none; text-transform: uppercase; letter-spacing: 0.2rem; font-size: 0.65rem; cursor: pointer; transition: var(--transition); }
+        .btn-back { background: none; border: none; color: var(--secondary); font-size: 0.6rem; letter-spacing: 0.15rem; text-transform: uppercase; cursor: pointer; margin-bottom: 1.5rem; }
+        input, select, textarea { width: 100%; padding: 1rem; border: 1px solid var(--border); margin-bottom: 1.2rem; font-family: 'Inter', sans-serif; outline: none; }
+        
+        .cart-status { position: sticky; bottom: 0; background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; font-size: 0.7rem; letter-spacing: 0.1rem; text-transform: uppercase; cursor: pointer; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .cart-status {
-            position: sticky; bottom: 0; background: var(--primary); color: white;
-            padding: 1.5rem; display: flex; justify-content: space-between;
-            font-size: 0.7rem; letter-spacing: 0.1rem; text-transform: uppercase; cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -127,37 +55,42 @@
         </div>
     </div>
 
-    <script>
-        const CATALOG = [
-            { id: 1, name: "Sérum Resplandor", price: 245, icon: "✨", detail: "Vitamina C + Ferúlico. Para pieles con falta de brillo.", type: "seca" },
-            { id: 2, name: "Gel Equilibrio", price: 195, icon: "🍃", detail: "Niacinamida + Zinc. Ideal para poros y grasa.", type: "grasa" },
-            { id: 3, name: "Crema H2O", price: 215, icon: "💧", detail: "Ácido Hialurónico. Hidratación para piel mixta.", type: "mixta" },
-            { id: 4, name: "Protector Solar Invisible", price: 180, icon: "☀️", detail: "Protección total con acabado aterciopelado.", type: "todos" }
-        ];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const syncChannel = new BroadcastChannel('lumina_sync');
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUdS0Gzfks0hQJCqTevtz5O2MFlRiHga4",
+            authDomain: "tiendaskin-bccba.firebaseapp.com",
+            projectId: "tiendaskin-bccba",
+            storageBucket: "tiendaskin-bccba.firebasestorage.app",
+            messagingSenderId: "280193902268",
+            appId: "1:280193902268:web:743d0e2172641be7a292b9"
+        };
 
-        const app = {
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getFirestore(firebaseApp);
+
+        // Estado Global
+        window.app = {
             state: {
                 step: 'intro',
-                history: [],
                 cart: [],
-                skinType: null,
-                orderId: null
+                dbProducts: [] // Aquí se guardará lo que venga de Firebase
+            },
+
+            init() {
+                // Escuchar cambios en los productos del asesor
+                onSnapshot(collection(db, "productos"), (snapshot) => {
+                    this.state.dbProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    this.render(); // Re-renderizar si cambian los productos
+                });
             },
 
             setStep(newStep) {
-                this.state.history.push(this.state.step);
                 this.state.step = newStep;
                 this.render();
                 window.scrollTo({top: 0, behavior: 'smooth'});
-            },
-
-            goBack() {
-                if (this.state.history.length > 0) {
-                    this.state.step = this.state.history.pop();
-                    this.render();
-                }
             },
 
             render() {
@@ -165,189 +98,105 @@
                 const cartBar = document.getElementById('cart-indicator');
                 const total = this.state.cart.reduce((s, p) => s + p.price, 0);
 
-                if (this.state.cart.length > 0 && ['catalog', 'intro'].includes(this.state.step)) {
-                    cartBar.style.display = 'flex';
+                cartBar.style.display = (this.state.cart.length > 0 && (this.state.step === 'catalog' || this.state.step === 'intro')) ? 'flex' : 'none';
+                if(cartBar.style.display === 'flex') {
                     document.getElementById('cart-count').innerText = `${this.state.cart.length} ARTÍCULOS`;
                     document.getElementById('cart-total').innerText = `Q ${total.toFixed(2)}`;
-                } else { cartBar.style.display = 'none'; }
+                }
 
-                switch(this.state.step) {
-                    case 'intro': renderIntro(stage); break;
-                    case 'diagnostic': renderDiagnostic(stage); break;
-                    case 'catalog': renderCatalog(stage); break;
-                    case 'cart': renderCart(stage); break;
-                    case 'checkout': renderCheckout(stage); break;
-                    case 'success': renderSuccess(stage); break;
-                    case 'feedback': renderFeedback(stage); break;
+                stage.innerHTML = '';
+                if(this.state.step === 'intro') {
+                    stage.innerHTML = `
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <h2 style="font-family:'Cormorant Garamond'; font-weight:300; font-size:1.8rem; margin-bottom:1rem;">Su ritual de belleza</h2>
+                            <p style="font-weight:200; font-size:0.9rem; color:#757575; margin-bottom:2rem;">Explore nuestras fórmulas exclusivas preparadas para su piel.</p>
+                            <button class="btn" onclick="app.setStep('catalog')">Ver Catálogo</button>
+                        </div>`;
+                } 
+                else if(this.state.step === 'catalog') {
+                    stage.innerHTML = `<button class="btn-back" onclick="app.setStep('intro')">← Inicio</button>
+                                       <h2 style="font-family:'Cormorant Garamond'; font-weight:300; font-size:1.8rem; margin-bottom:2rem;">Fórmulas Disponibles</h2>`;
+                    
+                    if(this.state.dbProducts.length === 0) {
+                        stage.innerHTML += `<p>No hay productos disponibles en este momento.</p>`;
+                    }
+
+                    this.state.dbProducts.forEach(p => {
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        card.innerHTML = `
+                            <div class="product-info-row">
+                                <span class="product-name">${p.name}</span>
+                                <span class="product-price">Q ${p.price.toFixed(2)}</span>
+                            </div>
+                            <p class="product-detail">${p.description || 'Sin descripción'}</p>
+                            <button class="btn" onclick="addToCart('${p.id}')">Añadir a la bolsa</button>
+                        `;
+                        stage.appendChild(card);
+                    });
+                }
+                else if(this.state.step === 'cart') {
+                    stage.innerHTML = `<button class="btn-back" onclick="app.setStep('catalog')">← Regresar</button><h2>Su Bolsa</h2>`;
+                    this.state.cart.forEach(p => {
+                        stage.innerHTML += `<div style="display:flex; justify-content:space-between; padding:1.2rem 0; border-bottom:1px solid #f9f9f9;">
+                            <span style="font-size:0.9rem">${p.name}</span><strong>Q ${p.price.toFixed(2)}</strong>
+                        </div>`;
+                    });
+                    stage.innerHTML += `<div style="text-align:right; padding:2rem 0"><h3>Total: Q ${total.toFixed(2)}</h3></div>
+                                         <button class="btn" onclick="app.setStep('checkout')">Finalizar Compra</button>`;
+                }
+                else if(this.state.step === 'checkout') {
+                    stage.innerHTML = `
+                        <button class="btn-back" onclick="app.setStep('cart')">← Regresar</button>
+                        <h2>Entrega</h2>
+                        <input type="text" id="c_name" placeholder="Nombre completo">
+                        <input type="text" id="c_addr" placeholder="Dirección de vivienda">
+                        <select id="c_pay">
+                            <option value="Transferencia">Transferencia Bancaria</option>
+                            <option value="Efectivo">Efectivo contra entrega</option>
+                        </select>
+                        <button class="btn" onclick="processOrder()">Confirmar Pedido</button>
+                    `;
+                }
+                else if(this.state.step === 'success') {
+                    stage.innerHTML = `<div style="text-align:center; padding-top:4rem;"><span style="font-size:4rem;">✦</span><h2>Pedido en Camino</h2><p>Un asesor le contactará en breve.</p></div>`;
                 }
             }
         };
 
-        function initApp() {
+        window.initApp = () => {
             document.getElementById('login-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('login-screen').style.display = 'none';
                 const appEl = document.getElementById('app');
                 appEl.style.display = 'flex';
                 setTimeout(() => appEl.style.opacity = '1', 50);
-                app.render();
+                app.init();
             }, 600);
-        }
+        };
 
-        function renderIntro(el) {
-            el.innerHTML = `
-                <div class="product-card" style="text-align: center; margin-top: 2rem;">
-                    <h2>Su ritual de belleza</h2>
-                    <p>Entendemos que cada piel es un mundo. Permítanos sugerirle lo mejor para usted.</p>
-                    <button class="btn" onclick="app.setStep('diagnostic')">Realizar Diagnóstico</button>
-                    <button class="btn btn-outline" style="margin-top:1rem" onclick="app.setStep('catalog')">Ver catálogo completo</button>
-                </div>
-            `;
-        }
-
-        function renderDiagnostic(el) {
-            el.innerHTML = `
-                <button class="btn-back" onclick="app.goBack()">← Regresar</button>
-                <h2>¿Cómo siente su piel?</h2>
-                <div class="card-option" onclick="selectSkin('seca')">Opaca, con tirantez o descamación.</div>
-                <div class="card-option" onclick="selectSkin('grasa')">Brillo excesivo y poros abiertos.</div>
-                <div class="card-option" onclick="selectSkin('mixta')">Zonas grasas en frente y nariz, mejillas normales.</div>
-            `;
-        }
-
-        function selectSkin(type) {
-            app.state.skinType = type;
-            app.setStep('catalog');
-        }
-
-        function renderCatalog(el) {
-            let html = `<button class="btn-back" onclick="app.goBack()">← Regresar</button><h2>Fórmulas Sugeridas</h2>`;
-            
-            // Priorizar recomendaciones según tipo de piel
-            const sortedCatalog = [...CATALOG].sort((a, b) => {
-                if (a.type === app.state.skinType) return -1;
-                if (b.type === app.state.skinType) return 1;
-                return 0;
-            });
-
-            sortedCatalog.forEach(p => {
-                const isRecom = p.type === app.state.skinType;
-                html += `
-                    <div class="product-card">
-                        ${isRecom ? '<span class="tag-recom">✦ Recomendado para usted</span>' : ''}
-                        <div class="product-img">${p.icon}</div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem">
-                            <span style="font-family:'Cormorant Garamond'; font-size:1.4rem">${p.name}</span>
-                            <span style="color:var(--secondary)">Q ${p.price}</span>
-                        </div>
-                        <p style="font-size:0.8rem; margin-bottom:1.2rem">${p.detail}</p>
-                        <button class="btn" onclick="addToCart(${p.id})">Añadir a la bolsa</button>
-                    </div>
-                `;
-            });
-            el.innerHTML = html;
-        }
-
-        function renderCart(el) {
-            const total = app.state.cart.reduce((s, p) => s + p.price, 0);
-            let html = `<button class="btn-back" onclick="app.goBack()">← Regresar</button><h2>Su Bolsa</h2>`;
-            if(app.state.cart.length === 0) {
-                html += `<p>Bolsa vacía.</p><button class="btn" onclick="app.setStep('catalog')">Ir al catálogo</button>`;
-            } else {
-                app.state.cart.forEach((p, i) => {
-                    html += `<div style="display:flex; justify-content:space-between; padding:1.2rem 0; border-bottom:1px solid #f9f9f9;">
-                        <span style="font-size:0.9rem">${p.name}</span><strong>Q ${p.price}</strong>
-                    </div>`;
-                });
-                html += `<div style="text-align:right; padding:2rem 0"><h3>Total Parcial: Q ${total.toFixed(2)}</h3></div>
-                         <button class="btn" onclick="app.setStep('checkout')">Finalizar Compra</button>`;
-            }
-            el.innerHTML = html;
-        }
-
-        function renderCheckout(el) {
-            el.innerHTML = `
-                <button class="btn-back" onclick="app.goBack()">← Regresar</button>
-                <h2>Entrega</h2>
-                <input type="text" id="c_name" placeholder="Nombre completo">
-                <input type="text" id="c_addr" placeholder="Dirección de vivienda">
-                <input type="text" id="c_ref" placeholder="Zona / Referencia (Ej. Zona 14, frente a...)">
-                
-                <label style="font-size:0.7rem; color:var(--secondary); text-transform:uppercase; letter-spacing:0.1rem;">Método de Pago</label>
-                <select id="c_pay">
-                    <option value="Transferencia">Transferencia Bancaria</option>
-                    <option value="Efectivo">Efectivo contra entrega</option>
-                    <option value="Tarjeta">Pago con Tarjeta (+ Recargo)</option>
-                </select>
-
-                <div style="background:#fdf5f0; border:1px solid #eee; padding:1.2rem; margin:1.5rem 0; border-radius:2px">
-                    <p style="font-size:0.75rem; color:#856404; margin-bottom:0">
-                        <strong>IMPORTANTE:</strong> El costo de envío depende de su zona y será indicado por el asesor que procesará su pedido en tiempo real.
-                    </p>
-                </div>
-
-                <button class="btn" onclick="processOrder()">Confirmar Pedido</button>
-            `;
-        }
-
-        function renderSuccess(el) {
-            el.innerHTML = `
-                <div style="text-align:center; padding-top:4rem;">
-                    <span style="font-size:4rem;">✦</span>
-                    <h2>Pedido en Camino</h2>
-                    <p>Su solicitud ha sido sincronizada con nuestro atelier. Un asesor le notificará el costo de envío en breve.</p>
-                    <button class="btn" onclick="app.setStep('feedback')">Calificar Experiencia</button>
-                </div>
-            `;
-        }
-
-        function renderFeedback(el) {
-            el.innerHTML = `
-                <div style="text-align:center;">
-                    <h2>¿Cómo fue su experiencia?</h2>
-                    <div style="display:flex; justify-content:center; gap:1rem; margin:2rem 0;">
-                        ${[1,2,3,4,5].map(n => `<span style="font-size:1.5rem; cursor:pointer; color:#ddd;" class="star" onclick="setRating(${n})">★</span>`).join('')}
-                    </div>
-                    <textarea id="f_msg" placeholder="¿Qué podemos mejorar?" rows="4"></textarea>
-                    <button class="btn" onclick="sendFeedback()">Enviar</button>
-                </div>
-            `;
-        }
-
-        // --- ACCIONES ---
         window.addToCart = (id) => {
-            app.state.cart.push(CATALOG.find(p => p.id === id));
+            const prod = app.state.dbProducts.find(p => p.id === id);
+            app.state.cart.push(prod);
             app.render();
         };
 
-        window.processOrder = () => {
+        window.processOrder = async () => {
             const name = document.getElementById('c_name').value;
             const addr = document.getElementById('c_addr').value;
-            const ref = document.getElementById('c_ref').value;
-            if(!name || !addr || !ref) return alert("Por favor complete todos los datos para la entrega.");
+            if(!name || !addr) return alert("Complete los datos");
 
-            app.state.orderId = Date.now().toString().slice(-6);
-            syncChannel.postMessage({
-                type: 'NEW_ORDER',
-                order: {
-                    id: app.state.orderId,
-                    name, addr, ref,
-                    items: app.state.cart,
-                    total: app.state.cart.reduce((s, p) => s + p.price, 0),
-                    payment: document.getElementById('c_pay').value
-                }
+            await addDoc(collection(db, "pedidos"), {
+                id: Math.floor(1000 + Math.random() * 9000),
+                name, addr,
+                items: app.state.cart,
+                total: app.state.cart.reduce((s, p) => s + p.price, 0),
+                payment: document.getElementById('c_pay').value,
+                status: 'pendiente',
+                createdAt: new Date()
             });
             app.state.cart = [];
             app.setStep('success');
-        };
-
-        window.setRating = (n) => {
-            document.querySelectorAll('.star').forEach((s, i) => s.style.color = i < n ? '#8d7b6d' : '#ddd');
-        };
-
-        window.sendFeedback = () => {
-            alert("Gracias por ayudarnos a mejorar.");
-            location.reload();
         };
     </script>
 </body>
